@@ -10,16 +10,16 @@ import httplib as http
 import requests
 import serial
 
-ser = serial.Serial('/dev/ttyACM2', 9600)
+ser = serial.Serial('/dev/ttyACM2', 9600, timeout=2)
 ser.open
 
-while 1:
+while True:
     motion_detect = ser.readline()
-    current_time = datetime.datetime.now()
-
+    current_time = str(datetime.datetime.now())
     #Motion Detection
-    data = "Time:"+ str(current_time) + " Someone moving? " + str(motion_detect)
-    data = json.loads(json.dumps(data))
-    print data
-    r = requests.post('http://192.168.2.136:7579/trash', json={'data':data})
+    payload = {'time':current_time,'someone moving' : motion_detect}
+    jsonString = json.dumps(payload)
+    print (jsonString)
+    requests.post('http://192.168.2.136:7579/motion', data=payload)
+    print "request posted"
     time.sleep(2)
